@@ -1,0 +1,8 @@
+{
+  "baseUrl": "http://localhost",
+  "port": 3900,
+  "moviesUrl": "/api/movies",
+  "genresUrl": "/api/genres",
+  "usersUrl": "/api/users",
+  "authUrl": "/api/auth"
+}

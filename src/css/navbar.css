@@ -1,0 +1,25 @@
+.vcenter {
+  padding-top: 15px;
+}
+
+.logo {
+  font-size: xx-large;
+}
+
+.NavText:hover,
+.NavText:active,
+.NavText:focus,
+.TextGradient1 {
+  font-weight: 900;
+  background: linear-gradient(to right, #f7ff00, #db36a4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.TextGradient {
+  font-weight: 900;
+  /* background: -webkit-linear-gradient(#eee, #333); */
+  background: linear-gradient(-225deg, #FF3CAC 0%, #562B7C 52%, #2B86C5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
