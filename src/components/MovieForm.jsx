@@ -4,7 +4,6 @@ import DisplayError from "../common/displayError";
 import withRouter from "../common/withRouter";
 import Joi from "joi-browser";
 import { getErrorMessage, validateForm } from "../common/validate";
-import { delay } from "../common/delay";
 import { toast } from "react-toastify";
 import { saveMovie } from "../services/fakeMovieService";
 import { getGenres } from "../services/fakeGenreService";
