@@ -4,12 +4,10 @@ import DisplayError from "../common/displayError";
 import withRouter from "../common/withRouter";
 import Joi from "joi-browser";
 import { getErrorMessage, validateForm } from "../common/validate";
-import axios from "axios";
-import config from "../utils/config.json";
 import { delay } from "../common/delay";
 import { toast } from "react-toastify";
-
-const { baseUrl, port, moviesUrl, genresUrl } = config;
+import { saveMovie } from "../services/fakeMovieService";
+import { getGenres } from "../services/fakeGenreService";
 
 class MovieForm extends Component {
 	state = {
@@ -47,59 +45,67 @@ class MovieForm extends Component {
 	}
 
 	schema = {
-		title: Joi.string().min(5).required().label("Title"),
-		genre: Joi.string().required().label("Genre"),
+		title: Joi.string()
+			.min(5)
+			.required()
+			.label("Title"),
+		genre: Joi.string()
+			.required()
+			.label("Genre"),
 		numberInStock: Joi.number()
 			.integer()
 			.min(0)
 			.max(100)
 			.required()
 			.label("Number In Stock"),
-		rate: Joi.number().min(0).max(10).required().label("Rate"),
+		rate: Joi.number()
+			.min(0)
+			.max(10)
+			.required()
+			.label("Rate"),
 	};
 
-	getGenresFromDb = async () => {
-		const { data: genres } = await axios.get(`${baseUrl}:${port}${genresUrl}`);
-		return genres;
+	getGenresFromDb = () => {
+		return getGenres();
 	};
 
-	setGenreNames = async () => {
-		const genres = await this.getGenresFromDb();
+	setGenreNames = () => {
+		const genres = this.getGenresFromDb();
 		const genreNames = genres.map((genre) => genre.name);
 		genreNames.unshift("");
 		this.setState({ genreNames });
 	};
 
-	updateMovie = async (id) => {
-		const { data: movies } = await axios.get(`${baseUrl}:${port}${moviesUrl}`);
+	updateMovie = (id) => {
+		const movies = this.props.location.state.moviesAll;
 		const movie = movies.find((m) => m._id === id);
 		const { title, genre: genreName, numberInStock, rate } = this.state.movie;
-		const genres = await this.getGenresFromDb();
-		const genreId = genres.find((g) => g.name === genreName)._id;
-		delete movie._id;
+		const genres = this.getGenresFromDb();
+		const genreObj = genres.find((g) => g.name === genreName);
 		delete movie.genre;
 		movie.title = title;
-		movie.genreId = genreId;
+		movie.genre = genreObj;
 		movie.numberInStock = numberInStock;
 		movie.dailyRentalRate = rate;
-		await axios.put(`${baseUrl}:${port}${moviesUrl}/${id}`, movie);
+		saveMovie(movie);
 	};
 
-	saveNewMovie = async () => {
+	saveNewMovie = () => {
 		const { title, genre, numberInStock, rate } = this.state.movie;
 		if (!(title && genre && numberInStock && rate)) return;
 
-		const genresFromDb = await this.getGenresFromDb();
-		const genreId = genresFromDb.filter((g) => g.name === genre)[0]._id;
+		const genresFromDb = this.getGenresFromDb();
+		const genreObj = genresFromDb.filter((g) => g.name === genre)[0];
 
 		let movie = {
+			_id: window.crypto.randomUUID(),
 			title,
-			genreId,
+			genre: genreObj,
 			numberInStock: Number(numberInStock),
 			dailyRentalRate: Number(rate),
 		};
 
-		await axios.post(`${baseUrl}:${port}${moviesUrl}`, movie);
+		saveMovie(movie);
 	};
 
 	handleSubmit = (e) => {
@@ -115,8 +121,7 @@ class MovieForm extends Component {
 			this.updateMovie(this.props.id);
 		}
 
-		toast("Saving...");
-		delay(1000).then(() => (window.location = "/movies"));
+		toast("Saved. Go back.");
 	};
 
 	handleChange = (e) => {

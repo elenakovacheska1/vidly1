@@ -11,7 +11,6 @@ const Movie = (props) => {
 	} else {
 		return (
 			<React.Fragment>
-				<h1>Movie Id: {id}</h1>
 				<MovieForm movies={location.state.moviesAll} id={id} />
 			</React.Fragment>
 		);

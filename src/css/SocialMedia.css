@@ -54,3 +54,9 @@
   background: #183153;
   color: white;
 }
+
+@media only screen and (max-width: 780px) {
+  .icon-bar {
+    display: none;
+  }
+}

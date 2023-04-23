@@ -12,6 +12,7 @@ import axios from "axios";
 import config from "../utils/config.json";
 import { toast } from "react-toastify";
 import GoogleMaps from "../common/googleMaps";
+import { getMovies, deleteMovie } from "../services/fakeMovieService";
 
 const { baseUrl, port, moviesUrl } = config;
 class Movies extends Component {
@@ -26,7 +27,7 @@ class Movies extends Component {
 	constructor() {
 		super();
 		this.state = {
-			movies: [],
+			movies: getMovies(),
 			pagination: {
 				currentPage: 1,
 				recordsPerPage: 3,
@@ -43,19 +44,6 @@ class Movies extends Component {
 			},
 		};
 	}
-
-	componentDidMount() {
-		this.getMoviesFromDb();
-		toast("Welcome!", {
-			toastId: "welcome",
-		});
-	}
-
-	getMoviesFromDb = async () => {
-		const { data: movies } = await axios.get(`${baseUrl}:${port}${moviesUrl}`);
-		const reversed = movies.reverse();
-		this.setState({ movies: reversed });
-	};
 
 	toggleLike = async (movie) => {
 		const movies = [...this.state.movies];
@@ -111,7 +99,7 @@ class Movies extends Component {
 		this.setState({ movies });
 
 		try {
-			await axios.delete(`${baseUrl}:${port}${moviesUrl}/${id}`);
+			deleteMovie(id);
 		} catch (ex) {
 			if (ex.response && ex.response.status === 404) {
 				toast.error("The movie has already been deleted");
